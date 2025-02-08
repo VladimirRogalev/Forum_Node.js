@@ -12,4 +12,12 @@ export default interface PostService {
      getAllPosts(): Promise<PostDto[]>;
 
      findPostsByAuthor(author: string): Promise<PostDto[]>;
+
+     addComment(id: string, user: string, message: string): Promise<PostDto>;
+
+     findPostsByTags(tags: string[]): Promise<PostDto[]>;
+
+     findPostsByPeriod(dateFrom: Date, dateTo: Date): Promise<PostDto[]>;
+
+     addLike(id: string): Promise<PostDto>;
 }

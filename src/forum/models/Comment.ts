@@ -1,15 +1,21 @@
-export default class Comment {
+import {model, Schema, Document} from 'mongoose';
+
+
+
+export interface IComment extends Document {
 
     user: string;
     message: string;
     dateCreated: Date;
     likes: number;
-
-
-    constructor(user: string, message: string, dateCreated: Date, likes: number) {
-        this.user = user;
-        this.message = message;
-        this.dateCreated = new Date();
-        this.likes = likes;
-    }
 }
+const commentSchema:Schema = new Schema({
+    user: { type: String, required: true},
+    message: { type: String, required: true},
+    dateCreated: {type: Date, required: true, default: Date.now},
+    likes: {type: 'Number', required: true, default: 0},
+})
+
+export const Comment = model<IComment>('Comment', commentSchema);
+
+

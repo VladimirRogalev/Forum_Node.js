@@ -1,6 +1,7 @@
 import PostService from './PostService';
 import PostDto from '../dto/PostDto';
 import {Post as P} from '../models/Post';
+import {Comment, IComment} from '../models/Comment';
 import CommentDto from '../dto/CommentDto';
 import {NotFoundError} from 'routing-controllers';
 import {Types} from 'mongoose';
@@ -78,7 +79,7 @@ export default class PostServiceImpl implements PostService {
     }
 
     async findPostsByAuthor(author: string): Promise<PostDto[]> {
-        const posts = await P.find({author:author});
+        const posts = await P.find({author: author});
         if (posts.length === 0) {
             throw new NotFoundError(`Post with author ${author} not found`);
         }
@@ -87,6 +88,67 @@ export default class PostServiceImpl implements PostService {
                 post.comments.map(c => c as unknown as CommentDto)
             );
         });
+        return postDto;
+    }
+
+    async addComment(id: string, user: string, message: string): Promise<PostDto> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new NotFoundError(`Post with id ${id} not found`);
+        }
+        const post = await P.findById(id);
+        if (post === null) {
+            throw new NotFoundError(`Post with id ${id} not found`);
+        }
+        const newComment: IComment = new Comment({
+            user: user,
+            message: message,
+        });
+        post.comments.push(newComment);
+
+        await post.save();
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            post.comments.map(c => c as CommentDto));
+        return postDto;
+    }
+
+    async findPostsByTags(tags: string[]): Promise<PostDto[]> {
+        const posts = await P.find({tags: {$in: tags}});
+        const postDto: PostDto[] = posts.map(post => {
+            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+                post.comments.map(c => c as CommentDto)
+            );
+        });
+        return postDto;
+    }
+
+    async findPostsByPeriod(dateFrom: Date, dateTo: Date): Promise<PostDto[]> {
+        const posts = await P.find({
+            dataCreated: {
+                $gte: dateFrom,
+                $lte: dateTo
+            }
+        });
+        const postDto: PostDto[] = posts.map(post => {
+            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+                post.comments.map(c => c as CommentDto)
+            );
+        });
+        return postDto;
+    }
+
+    async addLike(id: string): Promise<PostDto> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new NotFoundError(`Post with id ${id} not found`);
+        }
+        const post = await P.findById(id);
+        if (post === null) {
+            throw new NotFoundError(`Post with id ${id} not found`);
+        }
+        post.likes++;
+
+        await post.save();
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            post.comments.map(c => c as CommentDto));
         return postDto;
     }
 

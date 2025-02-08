@@ -1,4 +1,5 @@
 import {Document, model, Schema} from 'mongoose';
+import {IComment} from './Comment';
 
 
 export interface IPost extends Document {
@@ -8,7 +9,7 @@ export interface IPost extends Document {
     author: string;
     dataCreated: Date;
     likes: number;
-    comments: Comment[];
+    comments: IComment[];
 }
 
 const postSchema: Schema = new Schema<IPost>(

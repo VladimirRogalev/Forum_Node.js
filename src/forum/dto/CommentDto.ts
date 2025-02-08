@@ -3,4 +3,6 @@ export default interface CommentDto{
     message: string;
     dateCreated: Date;
     likes: number;
+
 }
+
