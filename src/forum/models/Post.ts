@@ -2,9 +2,9 @@ import {Document, model, Schema} from 'mongoose';
 
 
 export interface IPost extends Document {
-    'title': string;
-    'content': string;
-    'tags': Set<string>;
+    title: string;
+    content: string;
+    tags: Set<string>;
     author: string;
     dataCreated: Date;
     likes: number;
