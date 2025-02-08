@@ -8,4 +8,8 @@ export default interface PostService {
      updatePostById(id: string, title: string, content: string, tags: Set<string>): Promise<PostDto>;
 
      removePostById(id: string): Promise<PostDto>;
+
+     getAllPosts(): Promise<PostDto[]>;
+
+     findPostsByAuthor(author: string): Promise<PostDto[]>;
 }

@@ -18,6 +18,15 @@ export default class PostController {
     async findPostById(@Param('id') id: string, @Res() res: Response) {
         return await this.postService.findPostById(id).catch(err =>res.status(404).send(err))
     }
+    @Get('/posts')
+    async getAllPosts(@Res() res: Response) {
+        return await this.postService.getAllPosts().catch((err: any) =>res.status(404).send(err))
+    }
+
+    @Get('/posts/author/:author')
+    async findPostsByAuthor(@Param('author') author: string, @Res() res: Response) {
+        return await this.postService.findPostsByAuthor(author).catch((err: any) =>res.status(404).send(err))
+    }
 
     @Put("/post/:id")
     async updatePostById (@Param('id') id: string, @Body() newPostDto: NewPostDto, @Res() res: Response) {
