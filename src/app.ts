@@ -4,6 +4,7 @@ import {NotFoundError, useExpressServer} from 'routing-controllers';
 import PostController from './forum/controllers/PostController';
 import dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
+import UserController from './account/controllers/UserController';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 
 useExpressServer(app, {
-    controllers: [PostController,],
+    controllers: [PostController, UserController],
 });
 
 async function startServer() {

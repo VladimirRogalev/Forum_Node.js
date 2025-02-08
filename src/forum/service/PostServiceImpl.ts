@@ -113,6 +113,7 @@ export default class PostServiceImpl implements PostService {
 
     async findPostsByTags(tags: string[]): Promise<PostDto[]> {
         const posts = await P.find({tags: {$in: tags}});
+
         const postDto: PostDto[] = posts.map(post => {
             return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
                 post.comments.map(c => c as CommentDto)
