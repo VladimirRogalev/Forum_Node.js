@@ -12,4 +12,8 @@ export default interface UserService {
     getAllUser(): Promise<UserDto[]>;
 
     updateUser(login: string, firstName: string, lastName: string): Promise<UserDto>
+
+    addUserRole(login: string, role: string) : Promise<UserDto>
+
+    removeRole(login: string, role: string): Promise<UserDto>
 }

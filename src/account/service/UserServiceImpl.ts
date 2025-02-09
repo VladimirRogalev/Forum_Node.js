@@ -42,14 +42,30 @@ export default class UserServiceImpl implements UserService {
     }
 
     async updateUser(login: string, firstName: string, lastName: string): Promise<UserDto> {
-        const user = await User.findOne({login: login});
+        const user = await User.findOneAndUpdate({login: login}, {
+            $set: {
+                firstName: firstName, lastName: lastName
+            }
+        }, {new: true});
         if (user === null) {
             throw new NotFoundError(`User with login ${login} not found`);
         }
+        return new UserDto(user.login, user.firstName, user.lastName, user.roles);
+    }
 
-        user.firstName = firstName;
-        user.lastName = lastName;
-        await user.save();
+    async addUserRole(login: string, role: string): Promise<UserDto> {
+        const user = await User.findOneAndUpdate({login: login}, {$push: {roles: role}}, {new: true});
+        if (user === null) {
+            throw new NotFoundError(`User with login ${login} not found`);
+        }
+        return new UserDto(user.login, user.firstName, user.lastName, user.roles);
+    }
+
+    async removeRole(login: string, role: string): Promise<UserDto> {
+        const user = await User.findOneAndUpdate({login: login}, {$pull: {roles: role}}, {new: true});
+        if (user === null) {
+            throw new NotFoundError(`User with login ${login} not found`);
+        }
         return new UserDto(user.login, user.firstName, user.lastName, user.roles);
     }
 

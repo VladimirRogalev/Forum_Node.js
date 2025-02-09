@@ -3,7 +3,6 @@ import NewUserDto from '../dto/NewUserDto';
 import UserServiceImpl from '../service/UserServiceImpl';
 import UserService from '../service/UserService';
 import {Response} from 'express';
-import UpdateUserDto from '../dto/UpdateUserDto';
 
 
 @Controller('/account')
@@ -30,11 +29,20 @@ export default class UserController {
     }
 
     @Put('/user/:login')
-    async updateUser(@Param('login')login: string,@Body()  updateUserDto: UpdateUserDto, @Res() res: Response) {
+    async updateUser(@Param('login')login: string,@Body()  updateUserDto: NewUserDto, @Res() res: Response) {
         return await this.userService.updateUser(login, updateUserDto.firstName, updateUserDto.lastName).catch((err: any)=> res.status(404).send(err));
     }
 
-    // @Put('/post/:id')
+    @Put('/user/:login/role/:role')
+    async addUserRole(@Param('login')login: string,@Param('role') role:string, @Res() res: Response) {
+        return await this.userService.addUserRole(login, role).catch((err: any)=> res.status(404).send(err));
+    }
+
+    @Delete('/user/:login/role/:role')
+    async removeRole(@Param('login')login: string,@Param('role') role:string, @Res() res: Response) {
+        return await this.userService.removeRole(login, role).catch((err: any)=> res.status(404).send(err));
+    }
+
 }
 
 
