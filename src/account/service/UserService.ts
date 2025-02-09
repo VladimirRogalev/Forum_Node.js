@@ -6,4 +6,10 @@ export default interface UserService {
     register(newUserDto: NewUserDto): Promise<UserDto>;
 
     removeUserByLogin(login: string) : Promise<UserDto>;
+
+    getUserByLogin(login: string) : Promise<UserDto>
+
+    getAllUser(): Promise<UserDto[]>;
+
+    updateUser(login: string, firstName: string, lastName: string): Promise<UserDto>
 }
