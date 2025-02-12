@@ -5,10 +5,11 @@ import PostController from './forum/controllers/PostController';
 import dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import UserController from './account/controllers/UserController';
+import {AuthMiddleware} from './account/Middleware/AuthMiddleware';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI_LOCAL
+const MONGO_URI = process.env.MONGO_URI_LOCAL;
 
 mongoose.connect(MONGO_URI!)
     .then(() => console.log('Connected to MongoDb'))
@@ -32,6 +33,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 useExpressServer(app, {
     controllers: [PostController, UserController],
+    middlewares: [AuthMiddleware]
 });
 
 async function startServer() {
