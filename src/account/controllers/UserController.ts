@@ -1,9 +1,9 @@
 import {
+    Authorized,
     Body,
-    Controller,
     Delete,
     Get,
-    HeaderParam,
+    HeaderParam, JsonController,
     Param,
     Post,
     Put,
@@ -17,7 +17,7 @@ import {Response} from 'express';
 import {AuthMiddleware} from '../Middleware/AuthMiddleware';
 
 
-@Controller('/account')
+@JsonController('/account')
 export default class UserController {
    userService: UserService = new UserServiceImpl();
 
@@ -46,7 +46,8 @@ export default class UserController {
         return await this.userService.getUserByLogin(login).catch((err: any)=> res.status(404).send(err));
     }
 
-    @UseBefore(AuthMiddleware)
+    // @UseBefore(AuthMiddleware)
+    @Authorized()
     @Get('/users')
     async getAllUser(@Res() res: Response) {
         return await this.userService.getAllUser().catch((err: any)=> res.status(404).send(err));

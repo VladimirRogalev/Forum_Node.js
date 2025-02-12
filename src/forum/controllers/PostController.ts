@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Res, UseBefore} from 'routing-controllers';
+import {Body, Controller, Delete, Get, JsonController, Param, Post, Put, Res, UseBefore} from 'routing-controllers';
 import NewPostDto from '../dto/NewPostDto';
 import PostServiceImpl from '../service/PostServiceImpl';
 import PostService from '../service/PostService';
@@ -7,7 +7,7 @@ import CommentDto from '../dto/CommentDto';
 import {AuthMiddleware} from '../../account/Middleware/AuthMiddleware';
 
 
-@Controller('/forum')
+@JsonController('/forum')
 export default class PostController {
     postService: PostService = new PostServiceImpl();
 

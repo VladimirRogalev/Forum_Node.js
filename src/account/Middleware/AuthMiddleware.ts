@@ -1,9 +1,7 @@
-import {ExpressMiddlewareInterface, ForbiddenError, Middleware, NotFoundError} from 'routing-controllers';
+import {Action, ExpressMiddlewareInterface, ForbiddenError, Middleware, NotFoundError} from 'routing-controllers';
 import { Request, Response, NextFunction } from 'express';
 import {decodeBase64, encodeBase64} from '../utils/utilsForPassword';
 import {User} from '../model/User';
-
-
 
 export class AuthMiddleware implements ExpressMiddlewareInterface {
     async use(request: Request, response: Response, next: NextFunction): Promise<void> {
