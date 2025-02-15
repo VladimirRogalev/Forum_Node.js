@@ -4,8 +4,11 @@ import UserDto from '../dto/UserDto';
 import {User} from '../model/User';
 import {ForbiddenError, NotFoundError} from 'routing-controllers';
 import {decodeBase64, encodeBase64} from '../utils/utilsForPassword';
+import jwt from "jsonwebtoken";
+
 
 export default class UserServiceImpl implements UserService {
+
     async register(newUserDto: NewUserDto): Promise<UserDto> {
         let encodePass = encodeBase64(newUserDto.password);
         const newUser = new User({
@@ -72,8 +75,7 @@ export default class UserServiceImpl implements UserService {
         return new UserDto(user.login, user.firstName, user.lastName, user.roles);
     }
 
-    async login(token: string): Promise<UserDto> {
-        let [login, password] = decodeBase64((token.split(" "))[1]).split(":");
+    async login(login: string, password: string): Promise<string> {
         const user = await User.findOne({login: login});
         if (user === null) {
             throw new NotFoundError(`User with login ${login} not found`);
@@ -83,7 +85,14 @@ export default class UserServiceImpl implements UserService {
         if (pass !== encodePass){
             throw new ForbiddenError(`Password not valid`);
         }
-        return new UserDto(user.login, user.firstName, user.lastName, user.roles);
+
+        // Number(String(process.env.JWT_EXPIRED_TIME))
+        const token = jwt.sign({ login: user.login, roles: user.roles}, process.env.JWT_SECRET!)
+        //     , {
+        //     expiresIn:Number(String(process.env.JWT_EXPIRED_TIME)) ,
+        // });
+
+        return token;
     }
 
 

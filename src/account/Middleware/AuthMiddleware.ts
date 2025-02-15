@@ -1,33 +1,33 @@
-import {Action, ExpressMiddlewareInterface, ForbiddenError, Middleware, NotFoundError} from 'routing-controllers';
-import { Request, Response, NextFunction } from 'express';
-import {decodeBase64, encodeBase64} from '../utils/utilsForPassword';
+import {ExpressMiddlewareInterface} from 'routing-controllers';
+
+import {encodeBase64} from '../utils/utilsForPassword';
 import {User} from '../model/User';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 
 export class AuthMiddleware implements ExpressMiddlewareInterface {
-    async use(request: Request, response: Response, next: NextFunction): Promise<void> {
-        const token = request.headers["authorization"];
+    async use(request: any, response: any, next: (err?: any) => any): Promise<any> {
+        const token = request.headers['authorization'];
         if (!token) {
-            response.status(401).send("Access denied")
-            return;
+            return response.status(401).send('Access denied');
         }
-        let [login, password] = decodeBase64((token.split(" "))[1]).split(":");
-        if (!login || !password) {
-            response.status(401).send('Username or password is missing');
-            return;
+// Bearer ${jwt}
+        const jwtToken = (token.split(' '))[1];
+        try {
+            // const {login, roles} = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
+            // const user = await User.findOne({login});
+            // if (!user) {
+            //     response.status(403).send('Invalid token');
+            // }
+            request.user = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
+            next();
+        } catch (err) {
+            response.status(403).send('Invalid token');
         }
-        const user = await User.findOne({login: login});
-        if (user === null) {
-            response.status(401).send(`User with login ${login} not found`);
-            return;
-        }
-        const pass = user.password;
-        const encodePass = encodeBase64(password);
-        if (pass !== encodePass) {
-            response.status(401).send("Invalid password");
-            return ;
-        }
-
-        next();
     }
-
 }
+
+// export function checkCredentials
+
+// export const checkCredentials = (login: string, password: string) => {
+//     User.findOne({login, password: encodeBase64(password)}).then(Boolean);
+// };

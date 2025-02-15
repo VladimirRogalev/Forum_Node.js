@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/basicauth-middleware": "^3.1.5",
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.10.10",
@@ -8,15 +9,18 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.8",
+    "basicauth-middleware": "^3.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-handler": "^1.2.0",
     "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.6",
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.10.4"
   },
-  "name": "15_Forum_04_02_25",
+  "name": "18_Forum_14_02_25",
   "version": "1.0.0",
   "main": "src/app.ts",
   "scripts": {

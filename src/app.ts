@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import UserController from './account/controllers/UserController';
 import {AuthMiddleware} from './account/Middleware/AuthMiddleware';
+import {User} from './account/model/User';
 
 dotenv.config();
 
@@ -33,6 +34,14 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 useExpressServer(app, {
     controllers: [PostController, UserController],
+    // authorizationChecker: (action, roles) => {
+    //     const token = action.request.headers["authorization"];
+    //     const user = await getEntityManager().findOneByToken(User, token);
+    //     if (user && !roles.length) return true;
+    //     if (user && roles.find(role => user.roles.indexOf(role) !== -1)) return true;
+    //
+    //     return false;
+    // }
     middlewares: [AuthMiddleware]
 });
 
