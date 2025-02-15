@@ -4,7 +4,7 @@ import UserDto from '../dto/UserDto';
 import {User} from '../model/User';
 import {ForbiddenError, NotFoundError} from 'routing-controllers';
 import {decodeBase64, encodeBase64} from '../utils/utilsForPassword';
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 
 export default class UserServiceImpl implements UserService {
@@ -82,17 +82,38 @@ export default class UserServiceImpl implements UserService {
         }
         const pass = user.password;
         const encodePass = encodeBase64(password);
-        if (pass !== encodePass){
-            throw new ForbiddenError(`Password not valid`);
+        if (pass !== encodePass) {
+             throw new ForbiddenError(`Password not valid`);
+
         }
 
         // Number(String(process.env.JWT_EXPIRED_TIME))
-        const token = jwt.sign({ login: user.login, roles: user.roles}, process.env.JWT_SECRET!)
-        //     , {
-        //     expiresIn:Number(String(process.env.JWT_EXPIRED_TIME)) ,
-        // });
+        const token = jwt.sign({login: user.login, roles: user.roles}, process.env.JWT_SECRET!,
+            // {expiresIn:process.env.JWT_EXPIRED_TIME})
+            {expiresIn: '1h'});
 
         return token;
+    }
+
+    async changePassword(login: string, currentPassword: string, newPassword: string): Promise<{ message: string }> {
+        const user = await User.findOne({login: login});
+        if (user === null) {
+            throw new NotFoundError(`User with login ${login} not found`);
+        }
+        const currPass = user.password;
+        const decodePass = decodeBase64(currPass);
+        if(decodePass !== currentPassword){
+                throw new ForbiddenError(`Current password is wrong`);
+        }
+        if (decodePass === newPassword) {
+            throw new ForbiddenError(`Your new password is too similar to one of your previous passwords`);
+        }
+        const encodePass = encodeBase64(newPassword);
+        user.password = encodePass;
+        await user.save();
+        return {message: 'Password changed successfully'};
+
+
     }
 
 

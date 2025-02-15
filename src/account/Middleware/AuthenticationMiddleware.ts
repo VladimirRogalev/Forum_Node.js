@@ -1,10 +1,8 @@
 import {ExpressMiddlewareInterface} from 'routing-controllers';
 
-import {encodeBase64} from '../utils/utilsForPassword';
-import {User} from '../model/User';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 
-export class AuthMiddleware implements ExpressMiddlewareInterface {
+export class AuthenticationMiddleware implements ExpressMiddlewareInterface {
     async use(request: any, response: any, next: (err?: any) => any): Promise<any> {
         const token = request.headers['authorization'];
         if (!token) {
@@ -18,7 +16,9 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
             // if (!user) {
             //     response.status(403).send('Invalid token');
             // }
-            request.user = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
+
+            // console.log(decoded);
+            request.user =jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
             next();
         } catch (err) {
             response.status(403).send('Invalid token');

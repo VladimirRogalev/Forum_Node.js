@@ -18,4 +18,6 @@ export default interface UserService {
     removeRole(login: string, role: string): Promise<UserDto>
 
     login(login: string, password: string): Promise<string>;
+
+    changePassword(login: string, currentPassword: string, newPassword: string): Promise<{message: string}>;
 }

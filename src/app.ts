@@ -1,12 +1,13 @@
 import 'reflect-metadata';
 import express, {Application, NextFunction, Request, Response} from 'express';
-import {NotFoundError, useExpressServer} from 'routing-controllers';
+import {useExpressServer} from 'routing-controllers';
 import PostController from './forum/controllers/PostController';
 import dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import UserController from './account/controllers/UserController';
-import {AuthMiddleware} from './account/Middleware/AuthMiddleware';
-import {User} from './account/model/User';
+import {AuthenticationMiddleware} from './account/Middleware/AuthenticationMiddleware';
+import {AuthorizationMiddleware} from './account/Middleware/AuthorizationMiddleware';
+
 
 dotenv.config();
 
@@ -31,7 +32,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 
-
 useExpressServer(app, {
     controllers: [PostController, UserController],
     // authorizationChecker: (action, roles) => {
@@ -42,7 +42,7 @@ useExpressServer(app, {
     //
     //     return false;
     // }
-    middlewares: [AuthMiddleware]
+    middlewares: [AuthenticationMiddleware, AuthorizationMiddleware]
 });
 
 async function startServer() {
