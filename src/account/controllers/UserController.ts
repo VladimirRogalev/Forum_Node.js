@@ -1,4 +1,16 @@
-import {Body, Delete, Get, JsonController, Param, Post, Put, Req, Res, UseBefore} from 'routing-controllers';
+import {
+    Authorized,
+    Body,
+    Delete,
+    Get,
+    JsonController,
+    Param,
+    Post,
+    Put,
+    Req,
+    Res,
+    UseBefore
+} from 'routing-controllers';
 import NewUserDto from '../dto/NewUserDto';
 import UserServiceImpl from '../service/UserServiceImpl';
 import UserService from '../service/UserService';
@@ -14,8 +26,8 @@ export default class UserController {
     userService: UserService = new UserServiceImpl();
 
     @Post('/register')
-    async register(@Body() newUserDto: NewUserDto) {
-        return this.userService.register(newUserDto);
+    async register(@Body() newUserDto: NewUserDto, @Res() res: Response) {
+        return this.userService.register(newUserDto).catch((err: any) => res.status(404).send(err));;
     }
 
 
@@ -62,7 +74,7 @@ export default class UserController {
     async changePassword(@Param('login') login: string,@Body() passwordDto:PasswordDto, @Res() res: Response) {
         return await this.userService.changePassword(login, passwordDto.currentPassword, passwordDto.newPassword).catch((err: any) => res.status(404).send(err));
     }
-    @UseBefore(AuthorizationMiddleware)
+    @UseBefore( AuthorizationMiddleware)
     @Delete('/user/:login/role/:role')
     async removeRole(@Param('login') login: string, @Param('role') role: string, @Res() res: Response) {
         return await this.userService.removeRole(login, role).catch((err: any) => res.status(404).send(err));

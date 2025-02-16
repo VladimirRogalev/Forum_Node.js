@@ -11,10 +11,14 @@ export default class UserServiceImpl implements UserService {
 
     async register(newUserDto: NewUserDto): Promise<UserDto> {
         let encodePass = encodeBase64(newUserDto.password);
+        if (newUserDto.login) {
+            throw new ForbiddenError(`User with login ${newUserDto.login} is already exist`);
+        }
         const newUser = new User({
             ...newUserDto,
             password: encodePass
         });
+
         const res = await newUser.save();
         return new UserDto(res.login, res.firstName, res.lastName, res.roles);
     }

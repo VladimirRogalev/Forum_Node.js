@@ -12,22 +12,13 @@ export class AuthorizationMiddleware implements ExpressMiddlewareInterface {
         }
         const jwtToken = (token.split(' '))[1];
         try {
-            // console.log(decoded);
-            const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
-            const {login} = decoded;
-            const user = await User.findOne({login});
-            if (!user) {
-                return response.status(404).send(`User with login ${login} not found`);
-            }
-            const paramLogin = request.params.login;
-            if (user.login === paramLogin) {
-                next();
-            } else if (user.roles.includes('admin')) {
+            const {login, roles}  = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
+                if (roles.includes('admin') || roles.includes('moderator') ) {
                 next();
             } else {
-                return response.status(403).send('You are not authorized to modify this user.');
+                return response.status(403).send('You are not authorized.');
             }
-            request.user = decoded;
+            request.user = {login, roles};
         } catch (err) {
             response.status(403).send('Invalid token');
         }
