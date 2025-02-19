@@ -1,33 +1,29 @@
 import {ExpressMiddlewareInterface} from 'routing-controllers';
-
+import {NextFunction, Request, Response} from 'express';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 
 export class AuthenticationMiddleware implements ExpressMiddlewareInterface {
-    async use(request: any, response: any, next: (err?: any) => any): Promise<any> {
+    async use(request: Request, response: Response, next: NextFunction): Promise<any> {
         const token = request.headers['authorization'];
         if (!token) {
-            return response.status(401).send('Access denied');
+            return response.status(401).json({message: 'Access denied '});
         }
 // Bearer ${jwt}
-        const jwtToken = (token.split(' '))[1];
+        const parts = token.split(' ');
+        if (parts.length !== 2 || parts[0] !== 'Bearer') {
+            return response.status(401).json({message: 'Invalid token format'});
+        }
+        const jwtToken = parts[1];
+        if (!process.env.JWT_SECRET) {
+            return response.status(500).json({message: 'JWT secret is not configured'});
+        }
         try {
-            // const {login, roles} = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
-            // const user = await User.findOne({login});
-            // if (!user) {
-            //     response.status(403).send('Invalid token');
-            // }
+            const decode = jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
+            request.body = {...request.body, ...decode};
+            return  next();
 
-            // console.log(decoded);
-            request.user =jwt.verify(jwtToken, process.env.JWT_SECRET!) as JwtPayload;
-            next();
         } catch (err) {
-            response.status(403).send('Invalid token');
+            return  response.status(403).json({message: 'Invalid token 1'});
         }
     }
 }
-
-// export function checkCredentials
-
-// export const checkCredentials = (login: string, password: string) => {
-//     User.findOne({login, password: encodeBase64(password)}).then(Boolean);
-// };

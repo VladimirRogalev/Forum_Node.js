@@ -34,15 +34,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 useExpressServer(app, {
     controllers: [PostController, UserController],
-    // authorizationChecker: (action, roles) => {
-    //     const token = action.request.headers["authorization"];
-    //     const user = await getEntityManager().findOneByToken(User, token);
-    //     if (user && !roles.length) return true;
-    //     if (user && roles.find(role => user.roles.indexOf(role) !== -1)) return true;
-    //
-    //     return false;
-    // }
-    middlewares: [AuthenticationMiddleware, AuthorizationMiddleware]
+    middlewares: [AuthenticationMiddleware]
 });
 
 async function startServer() {

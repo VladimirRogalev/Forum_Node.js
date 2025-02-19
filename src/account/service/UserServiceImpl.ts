@@ -11,8 +11,9 @@ export default class UserServiceImpl implements UserService {
 
     async register(newUserDto: NewUserDto): Promise<UserDto> {
         let encodePass = encodeBase64(newUserDto.password);
-        if (newUserDto.login) {
-            throw new ForbiddenError(`User with login ${newUserDto.login} is already exist`);
+        const existingUser = await User.findOne({ login: newUserDto.login });
+        if (existingUser) {
+            throw new ForbiddenError(`User with login ${newUserDto.login} already exists`);
         }
         const newUser = new User({
             ...newUserDto,
@@ -91,9 +92,7 @@ export default class UserServiceImpl implements UserService {
 
         }
 
-        // Number(String(process.env.JWT_EXPIRED_TIME))
         const token = jwt.sign({login: user.login, roles: user.roles}, process.env.JWT_SECRET!,
-            // {expiresIn:process.env.JWT_EXPIRED_TIME})
             {expiresIn: '1h'});
 
         return token;
@@ -106,7 +105,7 @@ export default class UserServiceImpl implements UserService {
         }
         const currPass = user.password;
         const decodePass = decodeBase64(currPass);
-        if(decodePass !== currentPassword){
+         if(decodePass !== currentPassword){
                 throw new ForbiddenError(`Current password is wrong`);
         }
         if (decodePass === newPassword) {
