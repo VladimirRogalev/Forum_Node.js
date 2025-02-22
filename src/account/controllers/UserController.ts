@@ -74,6 +74,7 @@ export default class UserController {
     async changePassword(@Param('login') login: string,@Body() passwordDto:PasswordDto, @Res() res: Response) {
         return await this.userService.changePassword(login, passwordDto.currentPassword, passwordDto.newPassword).catch((err: any) => res.status(404).send(err));
     }
+
     @UseBefore(AuthenticationMiddleware,AuthorizationMiddleware )
     @Delete('/user/:login/role/:role')
     async removeRole(@Param('login') login: string, @Param('role') role: string, @Res() res: Response) {

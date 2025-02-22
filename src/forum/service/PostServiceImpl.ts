@@ -1,7 +1,6 @@
 import PostService from './PostService';
 import PostDto from '../dto/PostDto';
 import {Post as P} from '../models/Post';
-import {Comment, IComment} from '../models/Comment';
 import CommentDto from '../dto/CommentDto';
 import {NotFoundError} from 'routing-controllers';
 import {Types} from 'mongoose';
@@ -95,17 +94,22 @@ export default class PostServiceImpl implements PostService {
         if (!Types.ObjectId.isValid(id)) {
             throw new NotFoundError(`Post with id ${id} not found`);
         }
-        const post = await P.findById(id);
+        const post = await P.findByIdAndUpdate(
+            id,
+            {
+                $push: {
+                    comments: {
+                        user,
+                        message,
+                        likes: 0,
+                    },
+                },
+            },
+            {new: true}
+        );
         if (post === null) {
-            throw new NotFoundError(`Post with id ${id} not found`);
+            throw new Error('post is null');
         }
-        const newComment: IComment = new Comment({
-            user: user,
-            message: message,
-        });
-        post.comments.push(newComment);
-
-        await post.save();
         const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as CommentDto));
         return postDto;
