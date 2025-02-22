@@ -4,8 +4,9 @@ import PostDto from '../../../src/forum/dto/PostDto';
 
 jest.mock('../../../src/forum/models/Post');
 
-describe('PostServiceImpl.createPost', () => {
+describe('PostServiceImpl.removePostById', () => {
     let postService: PostServiceImpl;
+    const unknown = 'Unknown';
 
     beforeEach(() => {
         postService = new PostServiceImpl();
@@ -21,21 +22,20 @@ describe('PostServiceImpl.createPost', () => {
             id: id,
             title: 'Test title',
             content: 'Test Content',
-            tags:['node', 'jest'],
-            author: 'Test Author',
+            tags: ['node', 'jest'],
+            author: 'Tst Author',
             dateCreated: new Date(),
             likes: 10,
             comments: [{
-                user: 'Test User',
-                message: 'Test Message',
-                dateCreated: new Date('2025-02-22'),
-                likes: 1
-            }]
+                user: 'Test user', message: 'Test message', dateCreated: new Date('2025-02-21'), likes: 1
+            }],
+            deleteOne: jest.fn().mockResolvedValue(null)
         };
-        (Post.prototype.save as jest.Mock).mockResolvedValue(fakePostDto);
-        const result = await postService.createPost(fakePostDto.author, fakePostDto.title, fakePostDto.content, new Set(fakePostDto.tags));
+        (Post.findById as jest.Mock).mockResolvedValue(fakePostDto);
+        const result = await postService.removePostById(id);
 
-
+        expect(Post.findById).toHaveBeenCalledWith(id)
+        expect(fakePostDto.deleteOne).toHaveBeenCalledWith();
 
         expect(result).toBeInstanceOf(PostDto);
         expect(result.id).toEqual(fakePostDto.id);
@@ -48,9 +48,9 @@ describe('PostServiceImpl.createPost', () => {
         expect(result.comments).toEqual(fakePostDto.comments);
 
     });
-    it('Failed test', async () => {
-        (Post.prototype.save as jest.Mock).mockRejectedValue(new Error(("Database error")));
-        await expect(postService.createPost("Test Author", "Test Title", "Test Content", new Set<string>(['tag1', 'tag2']))).rejects.toThrow(`Database error`);
+    it('Not valid Id', async () => {
+        (Post.findById as jest.Mock).mockResolvedValue(null);
+        await expect(postService.removePostById(unknown)).rejects.toThrow(`Post with id ${unknown} not found`);
 
     });
 });

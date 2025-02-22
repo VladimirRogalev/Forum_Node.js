@@ -14,7 +14,7 @@ export default class PostServiceImpl implements PostService {
             author: author
         });
         const res = await newPost.save();
-        const resultPostDto: PostDto = new PostDto(res.id, res.title, res.content, res.author, res.dataCreated, Array.from(res.tags), res.likes,
+        const resultPostDto: PostDto = new PostDto(res.id, res.title, res.content, res.author, res.dateCreated, Array.from(res.tags), res.likes,
             res.comments.map(c => c as unknown as CommentDto));
         return resultPostDto;
     }
@@ -27,7 +27,7 @@ export default class PostServiceImpl implements PostService {
         if (post === null) {
             throw new NotFoundError(`Post with id ${id} not found`);
         }
-        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as unknown as CommentDto));
         return postDto;
     }
@@ -41,7 +41,7 @@ export default class PostServiceImpl implements PostService {
             throw new NotFoundError(`Post with id ${id} not found`);
         }
         await post.deleteOne();
-        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as unknown as CommentDto));
         return postDto;
 
@@ -59,7 +59,7 @@ export default class PostServiceImpl implements PostService {
         post.content = content;
         post.tags = tags;
         await post.save();
-        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as unknown as CommentDto));
         return postDto;
     }
@@ -70,7 +70,7 @@ export default class PostServiceImpl implements PostService {
             throw new NotFoundError(`Posts not found`);
         }
         const postDto: PostDto[] = posts.map(post => {
-            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            return new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
                 post.comments.map(c => c as unknown as CommentDto)
             );
         });
@@ -83,7 +83,7 @@ export default class PostServiceImpl implements PostService {
             throw new NotFoundError(`Post with author ${author} not found`);
         }
         const postDto: PostDto[] = posts.map(post => {
-            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            return new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
                 post.comments.map(c => c as unknown as CommentDto)
             );
         });
@@ -110,7 +110,7 @@ export default class PostServiceImpl implements PostService {
         if (post === null) {
             throw new Error('post is null');
         }
-        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as CommentDto));
         return postDto;
     }
@@ -119,7 +119,7 @@ export default class PostServiceImpl implements PostService {
         const posts = await P.find({tags: {$in: tags}});
 
         const postDto: PostDto[] = posts.map(post => {
-            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            return new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
                 post.comments.map(c => c as CommentDto)
             );
         });
@@ -134,7 +134,7 @@ export default class PostServiceImpl implements PostService {
             }
         });
         const postDto: PostDto[] = posts.map(post => {
-            return new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+            return new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
                 post.comments.map(c => c as CommentDto)
             );
         });
@@ -152,7 +152,7 @@ export default class PostServiceImpl implements PostService {
         post.likes++;
 
         await post.save();
-        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dataCreated, Array.from(post.tags), post.likes,
+        const postDto = new PostDto(post.id, post.title, post.content, post.author, post.dateCreated, Array.from(post.tags), post.likes,
             post.comments.map(c => c as CommentDto));
         return postDto;
     }

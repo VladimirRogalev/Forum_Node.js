@@ -4,8 +4,9 @@ import PostDto from '../../../src/forum/dto/PostDto';
 
 jest.mock('../../../src/forum/models/Post');
 
-describe('PostServiceImpl.createPost', () => {
+describe('PostServiceImpl.updatePostById', () => {
     let postService: PostServiceImpl;
+    const unknown = 'Unknown';
 
     beforeEach(() => {
         postService = new PostServiceImpl();
@@ -21,21 +22,23 @@ describe('PostServiceImpl.createPost', () => {
             id: id,
             title: 'Test title',
             content: 'Test Content',
-            tags:['node', 'jest'],
-            author: 'Test Author',
+            tags: ['node', 'jest'],
+            author: 'Tst Author',
             dateCreated: new Date(),
             likes: 10,
             comments: [{
-                user: 'Test User',
-                message: 'Test Message',
-                dateCreated: new Date('2025-02-22'),
-                likes: 1
-            }]
+                user: 'Test user', message: 'Test message', dateCreated: new Date('2025-02-21'), likes: 1
+            }],
+            save: jest.fn().mockResolvedValue(null)
         };
-        (Post.prototype.save as jest.Mock).mockResolvedValue(fakePostDto);
-        const result = await postService.createPost(fakePostDto.author, fakePostDto.title, fakePostDto.content, new Set(fakePostDto.tags));
+        (Post.findById as jest.Mock).mockResolvedValue(fakePostDto);
+        const updatedTitle = 'New title';
+        const updatedContent = 'New content';
+        const updatedTags = new Set(['node','jest']);
+        const result = await postService.updatePostById(id, updatedTitle, updatedContent, updatedTags);
 
-
+        expect(Post.findById).toHaveBeenCalledWith(id)
+        expect(fakePostDto.save).toHaveBeenCalled()
 
         expect(result).toBeInstanceOf(PostDto);
         expect(result.id).toEqual(fakePostDto.id);
@@ -43,14 +46,14 @@ describe('PostServiceImpl.createPost', () => {
         expect(result.content).toEqual(fakePostDto.content);
         expect(result.author).toEqual(fakePostDto.author);
         expect(result.dateCreated).toEqual(fakePostDto.dateCreated);
-        expect(result.tags).toEqual(fakePostDto.tags);
+        expect(result.tags).toEqual(Array.from(fakePostDto.tags));
         expect(result.likes).toEqual(fakePostDto.likes);
         expect(result.comments).toEqual(fakePostDto.comments);
 
     });
-    it('Failed test', async () => {
-        (Post.prototype.save as jest.Mock).mockRejectedValue(new Error(("Database error")));
-        await expect(postService.createPost("Test Author", "Test Title", "Test Content", new Set<string>(['tag1', 'tag2']))).rejects.toThrow(`Database error`);
+    it('Not valid Id', async () => {
+        (Post.findById as jest.Mock).mockResolvedValue(null);
+        await expect(postService.updatePostById(unknown, "Test Title", "Test Content", new Set<string>(['tag1', 'tag2']))).rejects.toThrow(`Post with id ${unknown} not found`);
 
     });
 });
