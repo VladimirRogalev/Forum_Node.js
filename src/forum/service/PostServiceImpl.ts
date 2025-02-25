@@ -128,7 +128,7 @@ export default class PostServiceImpl implements PostService {
 
     async findPostsByPeriod(dateFrom: Date, dateTo: Date): Promise<PostDto[]> {
         const posts = await P.find({
-            dataCreated: {
+            dateCreated: {
                 $gte: dateFrom,
                 $lte: dateTo
             }
